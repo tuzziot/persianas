@@ -113,6 +113,7 @@
       background: var(--result-bg);
       border-radius: 8px;
       border-left: 5px solid var(--accent);
+      position: relative;
     }
 
     .result[hidden] {
@@ -170,32 +171,12 @@
       <div class="dimension-group">
         <div class="form-group">
           <label for="largo">Largo (m):</label>
-          <input
-            type="number"
-            id="largo"
-            step="0.01"
-            min="0"
-            max="5"
-            placeholder="Ingrese largo"
-            inputmode="decimal"
-            pattern="\\d*(\\.\\d+)?"
-            required
-          />
+          <input type="number" id="largo" step="0.01" min="0" max="5" placeholder="Ingrese largo" inputmode="decimal" pattern="\\d*(\\.\\d+)?" required />
           <div id="largoError" class="error" hidden>Ingrese un largo válido (0‑5 m)</div>
         </div>
         <div class="form-group">
           <label for="alto">Alto (m):</label>
-          <input
-            type="number"
-            id="alto"
-            step="0.01"
-            min="0"
-            max="5"
-            placeholder="Ingrese alto"
-            inputmode="decimal"
-            pattern="\\d*(\\.\\d+)?"
-            required
-          />
+          <input type="number" id="alto" step="0.01" min="0" max="5" placeholder="Ingrese alto" inputmode="decimal" pattern="\\d*(\\.\\d+)?" required />
           <div id="altoError" class="error" hidden>Ingrese un alto válido (0‑5 m)</div>
         </div>
       </div>
@@ -359,6 +340,10 @@
 
     // PDF download
     btnPdf.addEventListener("click", async () => {
+      // 1️⃣ Ocultar el propio botón antes de capturar
+      btnPdf.style.display = "none";
+
+      // 2️⃣ Captura de canvas
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
@@ -370,9 +355,37 @@
       const imgProps = doc.getImageProperties(imgData);
       const pdfWidth = doc.internal.pageSize.getWidth() - 20;
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
 
-      doc.addImage(imgData, "PNG", 10, 10, pdfWidth, pdfHeight);
+      // 3️⃣ Cabecera personalizada
+      doc.setFontSize(22);
+      doc.setTextColor("#6d4c41");
+      doc.text("B&M Persianas", doc.internal.pageSize.getWidth() / 2, 20, {
+        align: "center",
+      });
+
+      doc.setFontSize(12);
+      doc.text("Contacto: 1131612246", doc.internal.pageSize.getWidth() / 2, 28, {
+        align: "center",
+      });
+
+      // 4️⃣ Imagen del presupuesto
+      doc.addImage(imgData, "PNG", 10, 35, pdfWidth, pdfHeight);
+
+      // 5️⃣ Footer
+      const footerY = 40 + pdfHeight;
+      doc.setFontSize(8);
+      doc.text(
+        "Ventas de persianas de aluminio y PVC con instalaciones y envíos a todo el país",
+        doc.internal.pageSize.getWidth() / 2,
+        footerY,
+        { align: "center" }
+      );
+
       doc.save("PresupuestoPersianas.pdf");
+
+      // 6️⃣ Mostrar de nuevo el botón tras descargar
+      btnPdf.style.display = "inline-block";
     });
   </script>
 </body>
