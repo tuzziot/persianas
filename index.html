@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#8d6e63" />
+  <title>Calculadora de Presupuesto de Persianas</title>
+  <style>
+    :root {
+      --bg: #f8f5f2;
+      --fg: #5d4037;
+      --panel: #fff;
+      --accent: #8d6e63;
+      --accent-dark: #6d4c41;
+      --border: #d7ccc8;
+      --result-bg: #efebe9;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--panel);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0 0 30px;
+      color: var(--accent);
+    }
+
+    h1.small {
+      font-size: 1.8rem;
+      color: #68524a;
+      margin-top: -20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--accent-dark);
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font-size: 16px;
+      color: var(--fg);
+    }
+
+    input[type="number"]:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 5px rgba(161, 136, 127, 0.5);
+    }
+
+    .dimension-group {
+      display: flex;
+      gap: 20px;
+    }
+
+    .dimension-group .form-group {
+      flex: 1;
+    }
+
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+      transition: background 0.3s, opacity 0.3s;
+    }
+
+    button:hover {
+      background: var(--accent-dark);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .result {
+      margin-top: 30px;
+      padding: 20px;
+      background: var(--result-bg);
+      border-radius: 8px;
+      border-left: 5px solid var(--accent);
+    }
+
+    .result[hidden] {
+      display: none;
+    }
+
+    .result h2 {
+      margin: 0 0 15px;
+      color: var(--accent-dark);
+    }
+
+    .total {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: var(--fg);
+    }
+
+    .installation-options {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f5f5f5;
+      border-radius: 5px;
+    }
+
+    .checkbox-group {
+      margin: 10px 0;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-weight: normal;
+      user-select: none;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .error {
+      color: crimson;
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 style="font-size: 2.8rem;">B&amp;M Persianas</h1>
+    <h1 class="small">Calculadora de Presupuesto de Persianas</h1>
+
+    <form id="cotizador" novalidate>
+      <div class="dimension-group">
+        <div class="form-group">
+          <label for="largo">Largo (m):</label>
+          <input
+            type="number"
+            id="largo"
+            step="0.01"
+            min="0"
+            max="5"
+            placeholder="Ingrese largo"
+            inputmode="decimal"
+            pattern="\\d*(\\.\\d+)?"
+            required
+          />
+          <div id="largoError" class="error" hidden>Ingrese un largo válido (0‑5 m)</div>
+        </div>
+        <div class="form-group">
+          <label for="alto">Alto (m):</label>
+          <input
+            type="number"
+            id="alto"
+            step="0.01"
+            min="0"
+            max="5"
+            placeholder="Ingrese alto"
+            inputmode="decimal"
+            pattern="\\d*(\\.\\d+)?"
+            required
+          />
+          <div id="altoError" class="error" hidden>Ingrese un alto válido (0‑5 m)</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="superficie">Superficie calculada (m²):</label>
+        <input type="number" id="superficie" readonly aria-live="polite" />
+      </div>
+
+      <div class="form-group">
+        <label for="tipo">Tipo de Persiana:</label>
+        <select id="tipo" required>
+          <option value="">Seleccione un tipo de persiana</option>
+          <option value="40000">PVC estándar - $40.000/m²</option>
+          <option value="47000">PVC reforzada - $47.000/m²</option>
+          <option value="53000">PVC superR - $53.000/m²</option>
+          <option value="84000">Aluminio lama 45 - $84.000/m²</option>
+          <option value="110000">Aluminio lama 45 marrón - $110.000/m²</option>
+          <option value="115000">Aluminio lama 55 - $115.000/m²</option>
+          <option value="130000">Aluminio lama 55 marrón - $130.000/m²</option>
+          <option value="125000">Aluminio lama 77 - $125.000/m²</option>
+          <option value="150000">Aluminio lama 77 marrón - $150.000/m²</option>
+          <option value="125000">Aluminio lama 95 - $125.000/m²</option>
+          <option value="135000">Aluminio lama 125 - $135.000/m²</option>
+        </select>
+        <div id="tipoError" class="error" hidden>Seleccione un tipo de persiana</div>
+      </div>
+
+      <div class="installation-options">
+        <label>Opciones de instalación:</label>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="instalacion" />
+            Instalación PVC/aluminio/puerta - $120.000
+          </label>
+        </div>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="cajon" />
+            Instalación cajón - $210.000
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" id="btnCalcular" disabled>Calcular Presupuesto</button>
+    </form>
+
+    <div class="result" id="resultado" hidden aria-live="polite">
+      <h2>Presupuesto</h2>
+      <div id="resultadoTexto"></div>
+      <button id="btnPdf" hidden>Descargar PDF</button>
+    </div>
+  </div>
+
+  <!-- jsPDF + html2canvas vía CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+
+  <script>
+    // Precios centralizados
+    const precios = {
+      instalaciones: {
+        basica: 120000,
+        cajon: 210000,
+      },
+    };
+
+    const form = document.getElementById("cotizador");
+    const largoIn = document.getElementById("largo");
+    const altoIn = document.getElementById("alto");
+    const superficieIn = document.getElementById("superficie");
+    const tipoSel = document.getElementById("tipo");
+    const btnCalcular = document.getElementById("btnCalcular");
+    const resultado = document.getElementById("resultado");
+    const resultadoTexto = document.getElementById("resultadoTexto");
+    const btnPdf = document.getElementById("btnPdf");
+
+    // Inputs numéricos → calcular superficie
+    [largoIn, altoIn].forEach((el) =>
+      el.addEventListener("input", () => {
+        validarCampo(el);
+        calcularSuperficie();
+        habilitarBoton();
+      })
+    );
+
+    tipoSel.addEventListener("change", () => {
+      validarTipo();
+      habilitarBoton();
+    });
+
+    function validarCampo(input) {
+      const val = parseFloat(input.value);
+      const errorEl = document.getElementById(input.id + "Error");
+      const valido = val > 0 && val <= parseFloat(input.max);
+      errorEl.hidden = valido;
+      return valido;
+    }
+
+    function validarTipo() {
+      const error = document.getElementById("tipoError");
+      error.hidden = !!tipoSel.value;
+      return !!tipoSel.value;
+    }
+
+    function habilitarBoton() {
+      btnCalcular.disabled =
+        !validarCampo(largoIn) || !validarCampo(altoIn) || !validarTipo();
+    }
+
+    function calcularSuperficie() {
+      const largo = parseFloat(largoIn.value) || 0;
+      const alto = parseFloat(altoIn.value) || 0;
+      superficieIn.value =
+        largo > 0 && alto > 0 ? (largo * alto).toFixed(2) : "";
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      calcularPresupuesto();
+    });
+
+    function calcularPresupuesto() {
+      const superficie = parseFloat(superficieIn.value);
+      const precioM2 = parseInt(tipoSel.value);
+      const nombreTipo = tipoSel.options[tipoSel.selectedIndex].text.split(" - ")[0];
+
+      // Costos de instalación
+      let costoInstBasica = document.getElementById("instalacion").checked
+        ? precios.instalaciones.basica
+        : 0;
+      let costoInstCajon = document.getElementById("cajon").checked
+        ? precios.instalaciones.cajon
+        : 0;
+
+      const precioBase = superficie * precioM2;
+      const precioTotal = precioBase + costoInstBasica + costoInstCajon;
+
+      // Render
+      resultadoTexto.innerHTML = `
+        <p>La persiana <strong>${nombreTipo}</strong> a <strong>${superficie.toFixed(
+        2
+      )} m²</strong> cuesta: $${precioBase.toLocaleString("es-AR")}</p>
+        ${
+          costoInstBasica
+            ? `<p>Instalación: $${costoInstBasica.toLocaleString("es-AR")}</p>`
+            : ""
+        }
+        ${
+          costoInstCajon
+            ? `<p>Instalación de cajón: $${costoInstCajon.toLocaleString("es-AR")}</p>`
+            : ""
+        }
+        <p class="total">Total: $${precioTotal.toLocaleString("es-AR")}</p>
+      `;
+
+      resultado.hidden = false;
+      btnPdf.hidden = false;
+      resultado.scrollIntoView({ behavior: "smooth" });
+    }
+
+    // PDF download
+    btnPdf.addEventListener("click", async () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const canvas = await html2canvas(resultado, {
+        scale: 2,
+        backgroundColor: "#ffffff",
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const imgProps = doc.getImageProperties(imgData);
+      const pdfWidth = doc.internal.pageSize.getWidth() - 20;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      doc.addImage(imgData, "PNG", 10, 10, pdfWidth, pdfHeight);
+      doc.save("PresupuestoPersianas.pdf");
+    });
+  </script>
+</body>
+</html>
