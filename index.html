@@ -16,9 +16,7 @@
       --result-bg: #efebe9;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -37,21 +35,10 @@
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     }
 
-    h1 {
-      text-align: center;
-      margin: 0 0 30px;
-      color: var(--accent);
-    }
+    h1 { text-align: center; margin: 0 0 30px; color: var(--accent); }
+    h1.small { font-size: 1.8rem; color: #68524a; margin-top: -20px; }
 
-    h1.small {
-      font-size: 1.8rem;
-      color: #68524a;
-      margin-top: -20px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
+    .form-group { margin-bottom: 20px; }
 
     label {
       display: block;
@@ -60,8 +47,7 @@
       color: var(--accent-dark);
     }
 
-    input[type="number"],
-    select {
+    input[type="number"], select {
       width: 100%;
       padding: 10px;
       border: 1px solid var(--border);
@@ -70,21 +56,14 @@
       color: var(--fg);
     }
 
-    input[type="number"]:focus,
-    select:focus {
+    input[type="number"]:focus, select:focus {
       outline: none;
       border-color: var(--accent);
       box-shadow: 0 0 5px rgba(161, 136, 127, 0.5);
     }
 
-    .dimension-group {
-      display: flex;
-      gap: 20px;
-    }
-
-    .dimension-group .form-group {
-      flex: 1;
-    }
+    .dimension-group { display: flex; gap: 20px; }
+    .dimension-group .form-group { flex: 1; }
 
     button {
       background: var(--accent);
@@ -97,15 +76,8 @@
       width: 100%;
       transition: background 0.3s, opacity 0.3s;
     }
-
-    button:hover {
-      background: var(--accent-dark);
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    button:hover { background: var(--accent-dark); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .result {
       margin-top: 30px;
@@ -115,51 +87,17 @@
       border-left: 5px solid var(--accent);
       position: relative;
     }
+    .result[hidden] { display: none; }
 
-    .result[hidden] {
-      display: none;
-    }
+    .result h2 { margin: 0 0 15px; color: var(--accent-dark); }
+    .total { font-size: 1.25rem; font-weight: bold; color: var(--fg); }
 
-    .result h2 {
-      margin: 0 0 15px;
-      color: var(--accent-dark);
-    }
+    .installation-options { margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px; }
+    .checkbox-group { margin: 10px 0; }
+    .checkbox-label { display: flex; align-items: center; cursor: pointer; font-weight: normal; user-select: none; }
+    input[type="checkbox"] { margin-right: 10px; cursor: pointer; }
 
-    .total {
-      font-size: 1.25rem;
-      font-weight: bold;
-      color: var(--fg);
-    }
-
-    .installation-options {
-      margin-top: 20px;
-      padding: 15px;
-      background: #f5f5f5;
-      border-radius: 5px;
-    }
-
-    .checkbox-group {
-      margin: 10px 0;
-    }
-
-    .checkbox-label {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      font-weight: normal;
-      user-select: none;
-    }
-
-    input[type="checkbox"] {
-      margin-right: 10px;
-      cursor: pointer;
-    }
-
-    .error {
-      color: crimson;
-      font-size: 0.9rem;
-      margin-top: 4px;
-    }
+    .error { color: crimson; font-size: 0.9rem; margin-top: 4px; }
   </style>
 </head>
 <body>
@@ -170,14 +108,14 @@
     <form id="cotizador" novalidate>
       <div class="dimension-group">
         <div class="form-group">
-          <label for="largo">Largo (m):</label>
-          <input type="number" id="largo" step="0.01" min="0" max="5" placeholder="Ingrese largo" inputmode="decimal" pattern="\\d*(\\.\\d+)?" required />
-          <div id="largoError" class="error" hidden>Ingrese un largo válido (0‑5 m)</div>
+          <label for="largo">Largo (cm):</label>
+          <input type="number" id="largo" step="1" min="0" max="500" placeholder="Ingrese largo" inputmode="decimal" pattern="\\d+" required />
+          <div id="largoError" class="error" hidden>Ingrese un largo válido (0‑500 cm)</div>
         </div>
         <div class="form-group">
-          <label for="alto">Alto (m):</label>
-          <input type="number" id="alto" step="0.01" min="0" max="5" placeholder="Ingrese alto" inputmode="decimal" pattern="\\d*(\\.\\d+)?" required />
-          <div id="altoError" class="error" hidden>Ingrese un alto válido (0‑5 m)</div>
+          <label for="alto">Alto (cm):</label>
+          <input type="number" id="alto" step="1" min="0" max="500" placeholder="Ingrese alto" inputmode="decimal" pattern="\\d+" required />
+          <div id="altoError" class="error" hidden>Ingrese un alto válido (0‑500 cm)</div>
         </div>
       </div>
 
@@ -208,16 +146,10 @@
       <div class="installation-options">
         <label>Opciones de instalación:</label>
         <div class="checkbox-group">
-          <label class="checkbox-label">
-            <input type="checkbox" id="instalacion" />
-            Instalación PVC/aluminio/puerta - $120.000
-          </label>
+          <label class="checkbox-label"><input type="checkbox" id="instalacion" />Instalación PVC/aluminio/puerta - $120.000</label>
         </div>
         <div class="checkbox-group">
-          <label class="checkbox-label">
-            <input type="checkbox" id="cajon" />
-            Instalación cajón - $210.000
-          </label>
+          <label class="checkbox-label"><input type="checkbox" id="cajon" />Instalación cajón - $210.000</label>
         </div>
       </div>
 
@@ -236,13 +168,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 
   <script>
-    // Precios centralizados
-    const precios = {
-      instalaciones: {
-        basica: 120000,
-        cajon: 210000,
-      },
-    };
+    const precios = { instalaciones: { basica: 120000, cajon: 210000 } };
 
     const form = document.getElementById("cotizador");
     const largoIn = document.getElementById("largo");
@@ -254,19 +180,8 @@
     const resultadoTexto = document.getElementById("resultadoTexto");
     const btnPdf = document.getElementById("btnPdf");
 
-    // Inputs numéricos → calcular superficie
-    [largoIn, altoIn].forEach((el) =>
-      el.addEventListener("input", () => {
-        validarCampo(el);
-        calcularSuperficie();
-        habilitarBoton();
-      })
-    );
-
-    tipoSel.addEventListener("change", () => {
-      validarTipo();
-      habilitarBoton();
-    });
+    [largoIn, altoIn].forEach((el) => el.addEventListener("input", () => { validarCampo(el); calcularSuperficie(); habilitarBoton(); }));
+    tipoSel.addEventListener("change", () => { validarTipo(); habilitarBoton(); });
 
     function validarCampo(input) {
       const val = parseFloat(input.value);
@@ -275,116 +190,61 @@
       errorEl.hidden = valido;
       return valido;
     }
-
-    function validarTipo() {
-      const error = document.getElementById("tipoError");
-      error.hidden = !!tipoSel.value;
-      return !!tipoSel.value;
-    }
-
-    function habilitarBoton() {
-      btnCalcular.disabled =
-        !validarCampo(largoIn) || !validarCampo(altoIn) || !validarTipo();
-    }
+    function validarTipo() { const error = document.getElementById("tipoError"); error.hidden = !!tipoSel.value; return !!tipoSel.value; }
+    function habilitarBoton() { btnCalcular.disabled = !validarCampo(largoIn) || !validarCampo(altoIn) || !validarTipo(); }
 
     function calcularSuperficie() {
-      const largo = parseFloat(largoIn.value) || 0;
-      const alto = parseFloat(altoIn.value) || 0;
-      superficieIn.value =
-        largo > 0 && alto > 0 ? (largo * alto).toFixed(2) : "";
+      const largoM = (parseFloat(largoIn.value) || 0) / 100;
+      const altoM = (parseFloat(altoIn.value) || 0) / 100;
+      superficieIn.value = largoM > 0 && altoM > 0 ? (largoM * altoM).toFixed(2) : "";
     }
 
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      calcularPresupuesto();
-    });
+    form.addEventListener("submit", (e) => { e.preventDefault(); calcularPresupuesto(); });
 
     function calcularPresupuesto() {
       const superficie = parseFloat(superficieIn.value);
       const precioM2 = parseInt(tipoSel.value);
       const nombreTipo = tipoSel.options[tipoSel.selectedIndex].text.split(" - ")[0];
 
-      // Costos de instalación
-      let costoInstBasica = document.getElementById("instalacion").checked
-        ? precios.instalaciones.basica
-        : 0;
-      let costoInstCajon = document.getElementById("cajon").checked
-        ? precios.instalaciones.cajon
-        : 0;
+      const costoInstBasica = document.getElementById("instalacion").checked ? precios.instalaciones.basica : 0;
+      const costoInstCajon = document.getElementById("cajon").checked ? precios.instalaciones.cajon : 0;
 
       const precioBase = superficie * precioM2;
       const precioTotal = precioBase + costoInstBasica + costoInstCajon;
 
-      // Render
       resultadoTexto.innerHTML = `
-        <p>La persiana <strong>${nombreTipo}</strong> x <strong>${superficie.toFixed(
-        2
-      )} m²</strong> cuesta: $${precioBase.toLocaleString("es-AR")}</p>
-        ${
-          costoInstBasica
-            ? `<p>Instalación: $${costoInstBasica.toLocaleString("es-AR")}</p>`
-            : ""
-        }
-        ${
-          costoInstCajon
-            ? `<p>Instalación de cajón: $${costoInstCajon.toLocaleString("es-AR")}</p>`
-            : ""
-        }
-        <p class="total">Total: $${precioTotal.toLocaleString("es-AR")}</p>
-      `;
+        <p>La persiana <strong>${nombreTipo}</strong> de <strong>${largoIn.value} cm × ${altoIn.value} cm</strong><br>(<em>${superficie.toFixed(2)} m²</em>) cuesta: $${precioBase.toLocaleString("es-AR")}</p>
+        ${costoInstBasica ? `<p>Instalación: $${costoInstBasica.toLocaleString("es-AR")}</p>` : ""}
+        ${costoInstCajon ? `<p>Instalación de cajón: $${costoInstCajon.toLocaleString("es-AR")}</p>` : ""}
+        <p class="total">Total: $${precioTotal.toLocaleString("es-AR")}</p>`;
 
       resultado.hidden = false;
       btnPdf.hidden = false;
       resultado.scrollIntoView({ behavior: "smooth" });
     }
 
-    // PDF download
     btnPdf.addEventListener("click", async () => {
-      // 1️⃣ Ocultar el propio botón antes de capturar
       btnPdf.style.display = "none";
-
-      // 2️⃣ Captura de canvas
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-
-      const canvas = await html2canvas(resultado, {
-        scale: 2,
-        backgroundColor: "#ffffff",
-      });
+      const canvas = await html2canvas(resultado, { scale: 2, backgroundColor: "#ffffff" });
       const imgData = canvas.toDataURL("image/png");
       const imgProps = doc.getImageProperties(imgData);
       const pdfWidth = doc.internal.pageSize.getWidth() - 20;
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      
 
-      // 3️⃣ Cabecera personalizada
       doc.setFontSize(22);
       doc.setTextColor("#6d4c41");
-      doc.text("B&M Persianas", doc.internal.pageSize.getWidth() / 2, 20, {
-        align: "center",
-      });
-
+      doc.text("B&M Persianas", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
       doc.setFontSize(12);
-      doc.text("Contacto: 1131612246", doc.internal.pageSize.getWidth() / 2, 28, {
-        align: "center",
-      });
+      doc.text("Contacto: 1131612246", doc.internal.pageSize.getWidth() / 2, 28, { align: "center" });
 
-      // 4️⃣ Imagen del presupuesto
       doc.addImage(imgData, "PNG", 10, 35, pdfWidth, pdfHeight);
-
-      // 5️⃣ Footer
       const footerY = 40 + pdfHeight;
-      doc.setFontSize(8);
-      doc.text(
-        "Ventas de persianas de aluminio y PVC con instalaciones y envíos a todo el país",
-        doc.internal.pageSize.getWidth() / 2,
-        footerY,
-        { align: "center" }
-      );
+      doc.setFontSize(12);
+      doc.text("Ventas de persianas de aluminio y PVC con instalaciones y envíos a todo el país", doc.internal.pageSize.getWidth() / 2, footerY, { align: "center" });
 
       doc.save("PresupuestoPersianas.pdf");
-
-      // 6️⃣ Mostrar de nuevo el botón tras descargar
       btnPdf.style.display = "inline-block";
     });
   </script>
