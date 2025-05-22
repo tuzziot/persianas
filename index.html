@@ -129,16 +129,16 @@
         <select id="tipo" required>
           <option value="">Seleccione un tipo de persiana</option>
           <option value="40000">PVC estándar - $40.000/m²</option>
-          <option value="47000">PVC reforzada - $47.000/m²</option>
+          <option value="43000">PVC reforzada - $43.000/m²</option>
           <option value="53000">PVC superR - $53.000/m²</option>
-          <option value="84000">Aluminio lama 45 - $84.000/m²</option>
+          <option value="85000">Aluminio lama 45 - $85.000/m²</option>
           <option value="110000">Aluminio lama 45 marrón - $110.000/m²</option>
-          <option value="115000">Aluminio lama 55 - $115.000/m²</option>
-          <option value="130000">Aluminio lama 55 marrón - $130.000/m²</option>
+          <option value="120000">Aluminio lama 55 - $120.000/m²</option>
+          <option value="135000">Aluminio lama 55 marrón - $135.000/m²</option>
           <option value="125000">Aluminio lama 77 - $125.000/m²</option>
           <option value="150000">Aluminio lama 77 marrón - $150.000/m²</option>
-          <option value="125000">Aluminio lama 95 - $125.000/m²</option>
-          <option value="135000">Aluminio lama 125 - $135.000/m²</option>
+          <option value="135000">Aluminio lama 95 - $135.000/m²</option>
+          <option value="145000">Aluminio lama 125 - $145.000/m²</option>
         </select>
         <div id="tipoError" class="error" hidden>Seleccione un tipo de persiana</div>
       </div>
@@ -146,7 +146,7 @@
       <div class="installation-options">
         <label>Opciones de instalación:</label>
         <div class="checkbox-group">
-          <label class="checkbox-label"><input type="checkbox" id="instalacion" />Instalación PVC/aluminio/puerta - $120.000</label>
+          <label class="checkbox-label"><input type="checkbox" id="instalacion" />Instalación PVC/aluminio/puerta - $100.000</label>
         </div>
         <div class="checkbox-group">
           <label class="checkbox-label"><input type="checkbox" id="cajon" />Instalación cajón - $210.000</label>
@@ -168,7 +168,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 
   <script>
-    const precios = { instalaciones: { basica: 120000, cajon: 210000 } };
+    const precios = { instalaciones: { basica: 100000, cajon: 210000 } };
 
     const form = document.getElementById("cotizador");
     const largoIn = document.getElementById("largo");
