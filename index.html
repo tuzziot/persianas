@@ -97,6 +97,27 @@
     .checkbox-label { display: flex; align-items: center; cursor: pointer; font-weight: normal; user-select: none; }
     input[type="checkbox"] { margin-right: 10px; cursor: pointer; }
 
+    .metros-group {
+      margin: 10px 0;
+      padding: 10px;
+      background: #fff;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+    }
+    
+    .metros-input {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .metros-input input {
+      width: 150px;
+      padding: 8px;
+      margin: 0;
+    }
+
     .error { color: crimson; font-size: 0.9rem; margin-top: 4px; }
   </style>
 </head>
@@ -110,12 +131,12 @@
         <div class="form-group">
           <label for="largo">Largo (cm):</label>
           <input type="number" id="largo" step="1" min="0" max="500" placeholder="Ingrese largo" inputmode="decimal" pattern="\\d+" required />
-          <div id="largoError" class="error" hidden>Ingrese un largo válido (0‑500 cm)</div>
+          <div id="largoError" class="error" hidden>Ingrese un largo válido (0‑500 cm)</div>
         </div>
         <div class="form-group">
           <label for="alto">Alto (cm):</label>
           <input type="number" id="alto" step="1" min="0" max="500" placeholder="Ingrese alto" inputmode="decimal" pattern="\\d+" required />
-          <div id="altoError" class="error" hidden>Ingrese un alto válido (0‑500 cm)</div>
+          <div id="altoError" class="error" hidden>Ingrese un alto válido (0‑500 cm)</div>
         </div>
       </div>
 
@@ -151,6 +172,23 @@
         <div class="checkbox-group">
           <label class="checkbox-label"><input type="checkbox" id="cajon" />Instalación cajón - $210.000</label>
         </div>
+        <div class="checkbox-group">
+          <label class="checkbox-label"><input type="checkbox" id="motor" />Motor - $180.000</label>
+        </div>
+        <div class="checkbox-group">
+          <label class="checkbox-label"><input type="checkbox" id="herraje" />Kit de herraje - $70.000</label>
+        </div>
+        
+        <div class="metros-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="cajonCompacto" />
+            Cajón compacto para aluminio lama 45 - $190.000/metro
+          </label>
+          <div class="metros-input" id="metrosInput" style="display: none;">
+            <label for="metrosLineales">Largo: (cm)</label>
+            <input type="number" id="metrosLineales" step="1" min="0" max="5000" placeholder="0" />
+          </div>
+        </div>
       </div>
 
       <button type="submit" id="btnCalcular" disabled>Calcular Presupuesto</button>
@@ -168,7 +206,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 
   <script>
-    const precios = { instalaciones: { basica: 100000, cajon: 210000 } };
+    const precios = { 
+      instalaciones: { 
+        basica: 100000, 
+        cajon: 210000,
+        motor: 180000,
+        herraje: 70000,
+        cajonCompacto: 190000
+      } 
+    };
 
     const form = document.getElementById("cotizador");
     const largoIn = document.getElementById("largo");
@@ -179,9 +225,20 @@
     const resultado = document.getElementById("resultado");
     const resultadoTexto = document.getElementById("resultadoTexto");
     const btnPdf = document.getElementById("btnPdf");
+    const cajonCompactoCheck = document.getElementById("cajonCompacto");
+    const metrosInput = document.getElementById("metrosInput");
+    const metrosLinealesIn = document.getElementById("metrosLineales");
 
     [largoIn, altoIn].forEach((el) => el.addEventListener("input", () => { validarCampo(el); calcularSuperficie(); habilitarBoton(); }));
     tipoSel.addEventListener("change", () => { validarTipo(); habilitarBoton(); });
+
+    // Mostrar/ocultar input de metros lineales
+    cajonCompactoCheck.addEventListener("change", () => {
+      metrosInput.style.display = cajonCompactoCheck.checked ? "flex" : "none";
+      if (!cajonCompactoCheck.checked) {
+        metrosLinealesIn.value = "";
+      }
+    });
 
     function validarCampo(input) {
       const val = parseFloat(input.value);
@@ -208,16 +265,43 @@
 
       const costoInstBasica = document.getElementById("instalacion").checked ? precios.instalaciones.basica : 0;
       const costoInstCajon = document.getElementById("cajon").checked ? precios.instalaciones.cajon : 0;
+      const costoMotor = document.getElementById("motor").checked ? precios.instalaciones.motor : 0;
+      const costoHerraje = document.getElementById("herraje").checked ? precios.instalaciones.herraje : 0;
+      
+      let costoCajonCompacto = 0;
+      if (cajonCompactoCheck.checked) {
+        const centimetros = parseFloat(metrosLinealesIn.value) || 0;
+        const metros = centimetros / 100;
+        costoCajonCompacto = metros * precios.instalaciones.cajonCompacto;
+      }
 
       const precioBase = superficie * precioM2;
-      const precioTotal = precioBase + costoInstBasica + costoInstCajon;
+      const precioTotal = precioBase + costoInstBasica + costoInstCajon + costoMotor + costoHerraje + costoCajonCompacto;
 
-      resultadoTexto.innerHTML = `
-        <p>La persiana <strong>${nombreTipo}</strong> de <strong>${largoIn.value} cm × ${altoIn.value} cm</strong><br>(<em>${superficie.toFixed(2)} m²</em>) cuesta: $${precioBase.toLocaleString("es-AR")}</p>
-        ${costoInstBasica ? `<p>Instalación: $${costoInstBasica.toLocaleString("es-AR")}</p>` : ""}
-        ${costoInstCajon ? `<p>Instalación de cajón: $${costoInstCajon.toLocaleString("es-AR")}</p>` : ""}
-        <p class="total">Total: $${precioTotal.toLocaleString("es-AR")}</p>`;
+      let resultadoHTML = `
+        <p>La persiana <strong>${nombreTipo}</strong> de <strong>${largoIn.value} cm × ${altoIn.value} cm</strong><br>(<em>${superficie.toFixed(2)} m²</em>) cuesta: $${precioBase.toLocaleString("es-AR")}</p>`;
 
+      if (costoInstBasica) {
+        resultadoHTML += `<p>Instalación: $${costoInstBasica.toLocaleString("es-AR")}</p>`;
+      }
+      if (costoInstCajon) {
+        resultadoHTML += `<p>Instalación de cajón: $${costoInstCajon.toLocaleString("es-AR")}</p>`;
+      }
+      if (costoMotor) {
+        resultadoHTML += `<p>Motor: $${costoMotor.toLocaleString("es-AR")}</p>`;
+      }
+      if (costoHerraje) {
+        resultadoHTML += `<p>Kit de herraje: $${costoHerraje.toLocaleString("es-AR")}</p>`;
+      }
+      if (costoCajonCompacto) {
+        const centimetros = parseFloat(metrosLinealesIn.value);
+        const metros = (centimetros / 100).toFixed(2);
+        resultadoHTML += `<p>Cajón compacto (${centimetros} cm = ${metros} metros): ${costoCajonCompacto.toLocaleString("es-AR")}</p>`;
+      }
+
+      resultadoHTML += `<p class="total">Total: $${precioTotal.toLocaleString("es-AR")}</p>`;
+
+      resultadoTexto.innerHTML = resultadoHTML;
       resultado.hidden = false;
       btnPdf.hidden = false;
       resultado.scrollIntoView({ behavior: "smooth" });
