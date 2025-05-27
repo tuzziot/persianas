@@ -97,25 +97,52 @@
     .checkbox-label { display: flex; align-items: center; cursor: pointer; font-weight: normal; user-select: none; }
     input[type="checkbox"] { margin-right: 10px; cursor: pointer; }
 
-    .metros-group {
+    .cajon-compacto-group {
       margin: 10px 0;
-      padding: 10px;
+      padding: 15px;
       background: #fff;
       border-radius: 5px;
       border: 1px solid var(--border);
     }
     
-    .metros-input {
+    .cajon-dimensions {
+      display: none;
+      margin-top: 15px;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 5px;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .cajon-dimensions.show {
+      display: block;
+    }
+
+    .cajon-dimension-group {
       display: flex;
-      align-items: center;
-      gap: 10px;
+      gap: 15px;
       margin-top: 10px;
     }
     
-    .metros-input input {
-      width: 150px;
+    .cajon-dimension-group .form-group {
+      flex: 1;
+      margin-bottom: 10px;
+    }
+
+    .cajon-dimension-group input {
+      width: 100%;
       padding: 8px;
       margin: 0;
+    }
+
+    .superficie-cajon {
+      margin-top: 10px;
+      padding: 8px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font-weight: 600;
+      color: var(--accent-dark);
     }
 
     .error { color: crimson; font-size: 0.9rem; margin-top: 4px; }
@@ -179,14 +206,26 @@
           <label class="checkbox-label"><input type="checkbox" id="herraje" />Kit de herraje - $70.000</label>
         </div>
         
-        <div class="metros-group">
+        <div class="cajon-compacto-group">
           <label class="checkbox-label">
             <input type="checkbox" id="cajonCompacto" />
-            Cajón compacto para aluminio lama 45 - $190.000/metro
+            Cajón compacto para aluminio lama 45 - $190.000/m²
           </label>
-          <div class="metros-input" id="metrosInput" style="display: none;">
-            <label for="metrosLineales">Largo: (cm)</label>
-            <input type="number" id="metrosLineales" step="1" min="0" max="5000" placeholder="0" />
+          <div class="cajon-dimensions" id="cajonDimensions">
+            <label><strong>Dimensiones del cajón compacto:</strong></label>
+            <div class="cajon-dimension-group">
+              <div class="form-group">
+                <label for="cajonLargo">Largo (cm):</label>
+                <input type="number" id="cajonLargo" step="1" min="0" max="5000" placeholder="0" />
+              </div>
+              <div class="form-group">
+                <label for="cajonAlto">Alto (cm):</label>
+                <input type="number" id="cajonAlto" step="1" min="0" max="5000" placeholder="0" />
+              </div>
+            </div>
+            <div class="superficie-cajon" id="superficieCajon">
+              Superficie del cajón: 0.00 m²
+            </div>
           </div>
         </div>
       </div>
@@ -226,18 +265,29 @@
     const resultadoTexto = document.getElementById("resultadoTexto");
     const btnPdf = document.getElementById("btnPdf");
     const cajonCompactoCheck = document.getElementById("cajonCompacto");
-    const metrosInput = document.getElementById("metrosInput");
-    const metrosLinealesIn = document.getElementById("metrosLineales");
+    const cajonDimensions = document.getElementById("cajonDimensions");
+    const cajonLargoIn = document.getElementById("cajonLargo");
+    const cajonAltoIn = document.getElementById("cajonAlto");
+    const superficieCajonEl = document.getElementById("superficieCajon");
 
     [largoIn, altoIn].forEach((el) => el.addEventListener("input", () => { validarCampo(el); calcularSuperficie(); habilitarBoton(); }));
     tipoSel.addEventListener("change", () => { validarTipo(); habilitarBoton(); });
 
-    // Mostrar/ocultar input de metros lineales
+    // Mostrar/ocultar dimensiones del cajón compacto
     cajonCompactoCheck.addEventListener("change", () => {
-      metrosInput.style.display = cajonCompactoCheck.checked ? "flex" : "none";
-      if (!cajonCompactoCheck.checked) {
-        metrosLinealesIn.value = "";
+      if (cajonCompactoCheck.checked) {
+        cajonDimensions.classList.add("show");
+      } else {
+        cajonDimensions.classList.remove("show");
+        cajonLargoIn.value = "";
+        cajonAltoIn.value = "";
+        calcularSuperficieCajon();
       }
+    });
+
+    // Calcular superficie del cajón cuando cambien las dimensiones
+    [cajonLargoIn, cajonAltoIn].forEach((el) => {
+      el.addEventListener("input", calcularSuperficieCajon);
     });
 
     function validarCampo(input) {
@@ -247,13 +297,28 @@
       errorEl.hidden = valido;
       return valido;
     }
-    function validarTipo() { const error = document.getElementById("tipoError"); error.hidden = !!tipoSel.value; return !!tipoSel.value; }
-    function habilitarBoton() { btnCalcular.disabled = !validarCampo(largoIn) || !validarCampo(altoIn) || !validarTipo(); }
+    
+    function validarTipo() { 
+      const error = document.getElementById("tipoError"); 
+      error.hidden = !!tipoSel.value; 
+      return !!tipoSel.value; 
+    }
+    
+    function habilitarBoton() { 
+      btnCalcular.disabled = !validarCampo(largoIn) || !validarCampo(altoIn) || !validarTipo(); 
+    }
 
     function calcularSuperficie() {
       const largoM = (parseFloat(largoIn.value) || 0) / 100;
       const altoM = (parseFloat(altoIn.value) || 0) / 100;
       superficieIn.value = largoM > 0 && altoM > 0 ? (largoM * altoM).toFixed(2) : "";
+    }
+
+    function calcularSuperficieCajon() {
+      const largoM = (parseFloat(cajonLargoIn.value) || 0) / 100;
+      const altoM = (parseFloat(cajonAltoIn.value) || 0) / 100;
+      const superficie = largoM * altoM;
+      superficieCajonEl.textContent = `Superficie del cajón: ${superficie.toFixed(2)} m²`;
     }
 
     form.addEventListener("submit", (e) => { e.preventDefault(); calcularPresupuesto(); });
@@ -269,10 +334,12 @@
       const costoHerraje = document.getElementById("herraje").checked ? precios.instalaciones.herraje : 0;
       
       let costoCajonCompacto = 0;
+      let superficieCajon = 0;
       if (cajonCompactoCheck.checked) {
-        const centimetros = parseFloat(metrosLinealesIn.value) || 0;
-        const metros = centimetros / 100;
-        costoCajonCompacto = metros * precios.instalaciones.cajonCompacto;
+        const largoM = (parseFloat(cajonLargoIn.value) || 0) / 100;
+        const altoM = (parseFloat(cajonAltoIn.value) || 0) / 100;
+        superficieCajon = largoM * altoM;
+        costoCajonCompacto = superficieCajon * precios.instalaciones.cajonCompacto;
       }
 
       const precioBase = superficie * precioM2;
@@ -294,9 +361,7 @@
         resultadoHTML += `<p>Kit de herraje: $${costoHerraje.toLocaleString("es-AR")}</p>`;
       }
       if (costoCajonCompacto) {
-        const centimetros = parseFloat(metrosLinealesIn.value);
-        const metros = (centimetros / 100).toFixed(2);
-        resultadoHTML += `<p>Cajón compacto (${centimetros} cm = ${metros} metros): ${costoCajonCompacto.toLocaleString("es-AR")}</p>`;
+        resultadoHTML += `<p>Cajón compacto (${cajonLargoIn.value} cm × ${cajonAltoIn.value} cm = ${superficieCajon.toFixed(2)} m²): $${costoCajonCompacto.toLocaleString("es-AR")}</p>`;
       }
 
       resultadoHTML += `<p class="total">Total: $${precioTotal.toLocaleString("es-AR")}</p>`;
