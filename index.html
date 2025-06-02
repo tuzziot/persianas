@@ -97,14 +97,6 @@
     .checkbox-label { display: flex; align-items: center; cursor: pointer; font-weight: normal; user-select: none; }
     input[type="checkbox"] { margin-right: 10px; cursor: pointer; }
 
-    .cajon-compacto-group {
-      margin: 10px 0;
-      padding: 15px;
-      background: #fff;
-      border-radius: 5px;
-      border: 1px solid var(--border);
-    }
-    
     .cajon-dimensions {
       display: none;
       margin-top: 15px;
@@ -187,9 +179,12 @@
           <option value="150000">Aluminio lama 77 marrón - $150.000/m²</option>
           <option value="135000">Aluminio lama 95 - $135.000/m²</option>
           <option value="145000">Aluminio lama 125 - $145.000/m²</option>
+          <option value="190000">Cajón compacto para aluminio lama 45 - $190.000/m²</option>
         </select>
         <div id="tipoError" class="error" hidden>Seleccione un tipo de persiana</div>
       </div>
+
+
 
       <div class="installation-options">
         <label>Opciones de instalación:</label>
@@ -204,29 +199,6 @@
         </div>
         <div class="checkbox-group">
           <label class="checkbox-label"><input type="checkbox" id="herraje" />Kit de herraje - $70.000</label>
-        </div>
-        
-        <div class="cajon-compacto-group">
-          <label class="checkbox-label">
-            <input type="checkbox" id="cajonCompacto" />
-            Cajón compacto para aluminio lama 45 - $190.000/m²
-          </label>
-          <div class="cajon-dimensions" id="cajonDimensions">
-            <label><strong>Dimensiones del cajón compacto:</strong></label>
-            <div class="cajon-dimension-group">
-              <div class="form-group">
-                <label for="cajonLargo">Largo (cm):</label>
-                <input type="number" id="cajonLargo" step="1" min="0" max="5000" placeholder="0" />
-              </div>
-              <div class="form-group">
-                <label for="cajonAlto">Alto (cm):</label>
-                <input type="number" id="cajonAlto" step="1" min="0" max="5000" placeholder="0" />
-              </div>
-            </div>
-            <div class="superficie-cajon" id="superficieCajon">
-              Superficie del cajón: 0.00 m²
-            </div>
-          </div>
         </div>
       </div>
 
@@ -264,31 +236,9 @@
     const resultado = document.getElementById("resultado");
     const resultadoTexto = document.getElementById("resultadoTexto");
     const btnPdf = document.getElementById("btnPdf");
-    const cajonCompactoCheck = document.getElementById("cajonCompacto");
-    const cajonDimensions = document.getElementById("cajonDimensions");
-    const cajonLargoIn = document.getElementById("cajonLargo");
-    const cajonAltoIn = document.getElementById("cajonAlto");
-    const superficieCajonEl = document.getElementById("superficieCajon");
 
     [largoIn, altoIn].forEach((el) => el.addEventListener("input", () => { validarCampo(el); calcularSuperficie(); habilitarBoton(); }));
     tipoSel.addEventListener("change", () => { validarTipo(); habilitarBoton(); });
-
-    // Mostrar/ocultar dimensiones del cajón compacto
-    cajonCompactoCheck.addEventListener("change", () => {
-      if (cajonCompactoCheck.checked) {
-        cajonDimensions.classList.add("show");
-      } else {
-        cajonDimensions.classList.remove("show");
-        cajonLargoIn.value = "";
-        cajonAltoIn.value = "";
-        calcularSuperficieCajon();
-      }
-    });
-
-    // Calcular superficie del cajón cuando cambien las dimensiones
-    [cajonLargoIn, cajonAltoIn].forEach((el) => {
-      el.addEventListener("input", calcularSuperficieCajon);
-    });
 
     function validarCampo(input) {
       const val = parseFloat(input.value);
@@ -314,13 +264,6 @@
       superficieIn.value = largoM > 0 && altoM > 0 ? (largoM * altoM).toFixed(2) : "";
     }
 
-    function calcularSuperficieCajon() {
-      const largoM = (parseFloat(cajonLargoIn.value) || 0) / 100;
-      const altoM = (parseFloat(cajonAltoIn.value) || 0) / 100;
-      const superficie = largoM * altoM;
-      superficieCajonEl.textContent = `Superficie del cajón: ${superficie.toFixed(2)} m²`;
-    }
-
     form.addEventListener("submit", (e) => { e.preventDefault(); calcularPresupuesto(); });
 
     function calcularPresupuesto() {
@@ -333,38 +276,26 @@
       const costoMotor = document.getElementById("motor").checked ? precios.instalaciones.motor : 0;
       const costoHerraje = document.getElementById("herraje").checked ? precios.instalaciones.herraje : 0;
       
-      let costoCajonCompacto = 0;
-      let superficieCajon = 0;
-      if (cajonCompactoCheck.checked) {
-        const largoM = (parseFloat(cajonLargoIn.value) || 0) / 100;
-        const altoM = (parseFloat(cajonAltoIn.value) || 0) / 100;
-        superficieCajon = largoM * altoM;
-        costoCajonCompacto = superficieCajon * precios.instalaciones.cajonCompacto;
-      }
-
       const precioBase = superficie * precioM2;
-      const precioTotal = precioBase + costoInstBasica + costoInstCajon + costoMotor + costoHerraje + costoCajonCompacto;
+      const precioTotal = precioBase + costoInstBasica + costoInstCajon + costoMotor + costoHerraje;
 
       let resultadoHTML = `
-        <p>La persiana <strong>${nombreTipo}</strong> de <strong>${largoIn.value} cm × ${altoIn.value} cm</strong><br>(<em>${superficie.toFixed(2)} m²</em>) cuesta: $${precioBase.toLocaleString("es-AR")}</p>`;
+        <p>La persiana <strong>${nombreTipo}</strong> de <strong>${largoIn.value} cm × ${altoIn.value} cm</strong><br>(<em>${superficie.toFixed(2)} m²</em>) cuesta: ${precioBase.toLocaleString("es-AR")}</p>`;
 
       if (costoInstBasica) {
-        resultadoHTML += `<p>Instalación: $${costoInstBasica.toLocaleString("es-AR")}</p>`;
+        resultadoHTML += `<p>Instalación: ${costoInstBasica.toLocaleString("es-AR")}</p>`;
       }
       if (costoInstCajon) {
-        resultadoHTML += `<p>Instalación de cajón: $${costoInstCajon.toLocaleString("es-AR")}</p>`;
+        resultadoHTML += `<p>Instalación de cajón: ${costoInstCajon.toLocaleString("es-AR")}</p>`;
       }
       if (costoMotor) {
-        resultadoHTML += `<p>Motor: $${costoMotor.toLocaleString("es-AR")}</p>`;
+        resultadoHTML += `<p>Motor: ${costoMotor.toLocaleString("es-AR")}</p>`;
       }
       if (costoHerraje) {
-        resultadoHTML += `<p>Kit de herraje: $${costoHerraje.toLocaleString("es-AR")}</p>`;
-      }
-      if (costoCajonCompacto) {
-        resultadoHTML += `<p>Cajón compacto (${cajonLargoIn.value} cm × ${cajonAltoIn.value} cm = ${superficieCajon.toFixed(2)} m²): $${costoCajonCompacto.toLocaleString("es-AR")}</p>`;
+        resultadoHTML += `<p>Kit de herraje: ${costoHerraje.toLocaleString("es-AR")}</p>`;
       }
 
-      resultadoHTML += `<p class="total">Total: $${precioTotal.toLocaleString("es-AR")}</p>`;
+      resultadoHTML += `<p class="total">Total: ${precioTotal.toLocaleString("es-AR")}</p>`;
 
       resultadoTexto.innerHTML = resultadoHTML;
       resultado.hidden = false;
