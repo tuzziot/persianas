@@ -175,6 +175,7 @@
           <option value="115000">Aluminio lama 45 marrón - $115.000/m²</option>
           <option value="125000">Aluminio lama 55 - $125.000/m²</option>
           <option value="145000">Aluminio lama 55 marrón - $145.000/m²</option>
+          <option value="240000">Aluminio lama 55 alta densidad - $240.000/m²</option>
           <option value="155000">Aluminio lama 77 - $155.000/m²</option>
           <option value="180000">Aluminio lama 77 marrón - $180.000/m²</option>
           <option value="145000">Aluminio lama 95 - $145.000/m²</option>
@@ -200,6 +201,9 @@
         <div class="checkbox-group">
           <label class="checkbox-label"><input type="checkbox" id="herraje" />Kit de herraje - $70.000</label>
         </div>
+        <div class="checkbox-group">
+          <label class="checkbox-label"><input type="checkbox" id="kit" />Kit de herraje + guias + motor y control - $520.000</label>
+        </div>
       </div>
 
       <button type="submit" id="btnCalcular" disabled>Calcular Presupuesto</button>
@@ -223,6 +227,7 @@
         cajon: 210000,
         motor: 160000,
         herraje: 70000,
+        kit: 520000,
         cajonCompacto: 190000
       } 
     };
@@ -275,9 +280,10 @@
       const costoInstCajon = document.getElementById("cajon").checked ? precios.instalaciones.cajon : 0;
       const costoMotor = document.getElementById("motor").checked ? precios.instalaciones.motor : 0;
       const costoHerraje = document.getElementById("herraje").checked ? precios.instalaciones.herraje : 0;
+      const costoKit = document.getElementById("kit").checked ? precios.instalaciones.kit : 0;
       
       const precioBase = superficie * precioM2;
-      const precioTotal = precioBase + costoInstBasica + costoInstCajon + costoMotor + costoHerraje;
+      const precioTotal = precioBase + costoInstBasica + costoInstCajon + costoMotor + costoHerraje + costoKit;
 
       let resultadoHTML = `
         <p>La persiana <strong>${nombreTipo}</strong> de <strong>${largoIn.value} cm × ${altoIn.value} cm</strong><br>(<em>${superficie.toFixed(2)} m²</em>) cuesta: ${precioBase.toLocaleString("es-AR")}</p>`;
@@ -293,6 +299,9 @@
       }
       if (costoHerraje) {
         resultadoHTML += `<p>Kit de herraje: ${costoHerraje.toLocaleString("es-AR")}</p>`;
+      }
+      if (costoKit) {
+        resultadoHTML += `<p>Kit completo: ${costoKit.toLocaleString("es-AR")}</p>`;
       }
 
       resultadoHTML += `<p class="total">Total: ${precioTotal.toLocaleString("es-AR")}</p>`;
